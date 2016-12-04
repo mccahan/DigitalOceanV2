@@ -50,7 +50,7 @@ class Droplet extends AbstractApi
      *
      * @return DropletEntity[]
      */
-    public function getAllByTag($per_page = 200, $page = 1)
+    public function getAllByTag($tag, $per_page = 200, $page = 1)
     {
         $droplets = $this->adapter->get(sprintf('%s/droplets?tag_name=%s&per_page=%d&page=%d', $this->endpoint, $tag, $per_page, $page));
 
@@ -138,7 +138,7 @@ class Droplet extends AbstractApi
      *
      * @return DropletEntity|null
      */
-    public function create($names, $region, $size, $image, $backups = false, $ipv6 = false, $privateNetworking = false, array $sshKeys = [], $userData = '')
+    public function create($names, $region, $size, $image, $backups = false, $ipv6 = false, $privateNetworking = false, array $sshKeys = [], $userData = '', $tags = [])
     {
         $data = is_array($names) ? ['names' => $names] : ['name' => $names];
 
@@ -157,6 +157,10 @@ class Droplet extends AbstractApi
 
         if (!empty($userData)) {
             $data['user_data'] = $userData;
+        }
+
+        if (0 < count($tags)) {
+            $data['tags'] = $tags;
         }
 
         $droplet = $this->adapter->post(sprintf('%s/droplets', $this->endpoint), $data);
